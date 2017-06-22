@@ -1,4 +1,4 @@
-Javelin-Word-Clock
+Anniversary Word Clock
 ==================
 
-Javelin Word Clock
+Word Clock
