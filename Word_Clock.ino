@@ -1,5 +1,8 @@
 /* 
- * Javelin Word Clock
+ * Anniversary Word Clock
+ * 
+ * Heavily based on Nitrohawk's Javelin Word Clock.
+ * https://github.com/nitrohawk/Javelin-Word-Clock
  * 
  * This clock is built to display spelled out words depending on the time of day.
  * The code depends on both an RTC and Addressable RGB LEDs
@@ -48,22 +51,29 @@ uint32_t colorBlue = grid.Color(0, 0, 255);
 uint32_t colorJGreen = grid.Color(50, 179, 30);
 
 // the words
-int arrJAVELIN[] = {164,147,163,162,148,149,161,150,151,152,158,153,157,156,154,155,-1};
+
+
 int arrTHE1[] = {65,66,67,-1};
-int arrAGE[] = {69,70,71,-1};
-int arrNYC[] = {72,73,74,-1};
-int arrAGENCY[] = {69,70,71,72,73,74,-1};
 int arrOF[] = {76,77,-1};
-int arrTHE2[] = {40,41,42,-1};
 int arrTIME[] = {168,167,166,165,-1};
-int arrWE[] = {143,144,-1};
 int arrA[] = {177,-1};
-int arrAT[] = {145,146,-1};
-int arrCUSTOMER[] = {44,45,46,47,48,49,50,51,-1};
-int arrHELLO[] = {56,55,54,53,52,-1};
 int arrIT[] = {142,141,-1};
 int arrIS[] = {139,138,-1};
-int arrQUARTER[] = {119,120,121,122,123,124,125,-1};
+
+int arrHAPPY[] = {117,118,119,120,121,-1};
+int arrANNIVERSARY[] = {66,67,68,69,70,71,72,73,74,75,76,-1};
+int arrBIRTHDAY[] = {64,63,62,61,60,59,58,57,-1};
+int arrCOLE[] = {55,54,53,52,-1};
+int arrCLARA[] = {39,40,41,42,43,-1};
+int arrMAMA[] = {44,45,46,47,-1};
+int arrPAPA[] = {48,49,50,51,-1};
+
+int arrBANNER[] = {168,167,166,165,164,163,162,161,160,
+                 159,158,157,156,155,154,153,152,151,150,
+                 149,148,147,146,145,144,143,-1};
+int arrHEART[] = {163,162,149,148,-1};
+
+int arrQUARTER[] = {123,124,125,126,127,128,129,-1};
 int arrHALF[] = {133,132,131,130,-1};
 int arrPAST[] = {91,92,93,94,-1};
 int arrOCLOCK[] = {5,4,3,2,1,0,-1};
@@ -84,10 +94,20 @@ int arrELEVEN[] = {20,21,22,23,24,25,-1};
 int arrTWELVE[] = {12,11,10,9,8,7,-1};
 int arrTWENTY[] = {116,115,114,113,112,111,-1};
 
+
+//int arrJAVELIN[] = {164,147,163,162,148,149,161,150,151,152,158,153,157,156,154,155,-1};
+//int arrAGENCY[] = {69,70,71,72,73,74,-1};
+//int arrTHE2[] = {40,41,42,-1};
+//int arrWE[] = {143,144,-1};
+//int arrAT[] = {145,146,-1};
+//int arrCUSTOMER[] = {44,45,46,47,48,49,50,51,-1};
+//int arrHELLO[] = {56,55,54,53,52,-1};
+
+
 void setup() {
   // set up the debuging serial output
   Serial.begin(9600);
-//  while(!Serial); // Needed for Leonardo only
+  // while(!Serial); // Needed for Leonardo only
   delay(200);
   setSyncProvider(RTC.get);   // the function to get the time from the RTC
   setSyncInterval(60); // sync the time every 60 seconds (1 minutes)
@@ -109,18 +129,22 @@ void setup() {
   grid.setBrightness(intBrightness);
 
   colorWipe(colorBlack, 0);
+  /*
   spellWord(arrHELLO, colorJGreen);
   delay(1000);
   spellWord(arrHELLO, colorWhite);
   delay(1000);
   fadeOut(10);
   colorWipe(colorBlack, 0);
+  */
 
-//  paintWord(arrJAVELIN, colorJGreen);
-//  fadeIn(50);
+  //paintWord(arrJAVELIN, colorJGreen);
+  //fadeIn(50);
+  
   // set the bright ness of the strip
   grid.setBrightness(intBrightness);
 
+  /*
   // flash our cool tag line
   THEAGE();
   THECUSTOMER();
@@ -128,6 +152,7 @@ void setup() {
   delay(50);
   colorWipe(colorBlack, 0);
   grid.setBrightness(intBrightness);
+  */
   
   // initialize the onboard led on pin 13
   pinMode(LED13PIN, OUTPUT);
@@ -152,12 +177,13 @@ void loop(){
       setTime(t);          
     }
   }
+  
   // check to see if the time has been set
-  if (timeStatus() == timeSet){
+  if (timeStatus() == timeSet) {
     // time is set lets show the time
     if((hour() < 7) | (hour() >= 19)){
       intBrightness =  BRIGHTNESSNIGHT;
-    }else{
+    } else{
       intBrightness =  BRIGHTNESSDAY;
     }
     grid.setBrightness(intBrightness);
@@ -169,11 +195,12 @@ void loop(){
       if(intTestMode){
         Serial.println("Selftest Mode TRUE");
         // run through a quick test
-        test_grid();
+        //test_grid();
       }else{
         Serial.println("Selftest mode FALSE");
       }
     }
+    
     // test to see if a forward button is being held down for time setting
     if(digitalRead(FWDButtonPIN) == LOW){
       digitalWrite(LED13PIN, HIGH);
@@ -204,6 +231,7 @@ void loop(){
     Serial.println();
     delay(4000);
   }
+  
   delay(1000);
 }
 
@@ -213,7 +241,9 @@ void incrementTime(int intSeconds){
     Serial.print("adding ");
     Serial.print(intSeconds);
     Serial.println(" seconds to RTC");
-//    colorWipe(colorBlack, 0);
+  
+    //colorWipe(colorBlack, 0);
+    
     adjustTime(intSeconds);
     RTC.set(now() + intSeconds);
     digitalClockDisplay();
@@ -238,9 +268,11 @@ void digitalClockDisplay(){
 void displayTime(){
   String strCurrentTime; // build the current time
   //colorWipe(colorBlack, 0);
-  paintWord(arrJAVELIN, colorJGreen);
+  paintWord(arrBANNER, colorJGreen);
+  
   // Now, turn on the "It is" leds
   paintWord(arrIT, colorWhite);
+  
   // if the time IS one of the following IS is green
   if((minute()==5)
     |(minute()==10)
@@ -979,8 +1011,8 @@ void displayTime(){
       fadeOut(20);
       colorWipe(colorBlack, 0);
       grid.setBrightness(intBrightness);
-      THEAGE();
-      THECUSTOMER();
+      //THEAGE();
+      //THECUSTOMER();
       fadeOut(20);
       colorWipe(colorBlack, 10);
       grid.setBrightness(intBrightness);
@@ -992,6 +1024,7 @@ void displayTime(){
   }
 }
 
+/* JAVELIN specific code
 void THEAGE(){
 //  paintWord(arrJAVELIN, colorBlack);
   paintWord(arrTHE1, colorWhite);
@@ -1022,6 +1055,7 @@ void THECUSTOMER(){
   paintWord(arrCUSTOMER, colorJGreen);
   delay(1000);
 }
+*/
 
 void printDigits(int digits){
   // utility function for digital clock display: prints preceding colon and leading 0
@@ -1142,6 +1176,7 @@ unsigned long processSyncMessage() {
   return pctime;
 }
 
+/*
 // runs throught the various displays, testing
 void test_grid(){
   printVersion();
@@ -1291,3 +1326,4 @@ void test_grid(){
   grid.setBrightness(intBrightness);
   intTestMode = !intTestMode;
 }
+*/
